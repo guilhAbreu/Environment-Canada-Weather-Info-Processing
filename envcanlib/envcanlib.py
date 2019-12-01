@@ -6,16 +6,16 @@ Created on Wed Nov 30 23:35:15 2019
 @author: guilherme
 """
 
-def downloadData(IDs, yearRange, monthRange, method = 'hourly', path = './'):
+def downloadData(IDs, start, end, method = 'hourly', path = './'):
     '''
     Description: It downloads weather information from the Environment Canada website. 
     It is possible to download daily or hourly information in a slice of time passed as an argument.
     
     Input: IDs:  list of the target stations IDs.
     
-           yearRange: List of the target years.
+           start: A tuple with start year and start month.
            
-           monthRange: List of the target months.
+           end: A tuple with end year and end month.
            
            method: 'hourly' for hourly information (deafault) or 'daily' for daily information.
            
@@ -24,6 +24,11 @@ def downloadData(IDs, yearRange, monthRange, method = 'hourly', path = './'):
     
     import pandas as pd
     import urllib as url
+    
+    if start[0] > end[0]:
+        raise ValueError('Start year is greater than end year')
+    if start[0] == end[0] and start[1] > end[1]:
+        raise ValueError('Start month is greater than end month')
     
     if method == 'hourly':
         method  = "&timeframe=1&submit=Download+Data"
@@ -35,7 +40,17 @@ def downloadData(IDs, yearRange, monthRange, method = 'hourly', path = './'):
     
     for ID in IDs:
         data = pd.DataFrame([])
-        for intYr in yearRange:
+        for intYr in range(start[0], end[0]+1):
+            if intYr == start[0]:
+                if start[0] == end[0]:
+                    monthRange = range(start[1], end[1]+1)
+                else:
+                    monthRange = range(start[1],13)
+            elif intYr == end[0]:
+                monthRange = range(1, end[1]+1)
+            else:
+                monthRange = range(1, 13)    
+            
             for intMnt in monthRange:
                 #build the query
                 strQry = 'http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=' + str(ID) + "&Year=" + str(intYr) +'&Month=' + str(intMnt) + method 

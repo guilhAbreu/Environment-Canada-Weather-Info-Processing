@@ -17,7 +17,7 @@ quebecStations = metaData[metaData["Province"] == "QUEBEC"]
 IDs = quebecStations["Station ID"].unique()
 
 #It downloads data
-ecl.downloadData(IDs = [5205], yearRange = [2018], monthRange = [2], method = 'daily')
+ecl.downloadData(IDs = [5205], start = (2018, 2), end = (2018,3), method = 'daily')
 
 dataSet = dict()
 dataPath = "../data_set/EnviromentCanada/QuebecStations/"
