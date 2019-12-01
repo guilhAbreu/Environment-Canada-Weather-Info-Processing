@@ -6,18 +6,18 @@ Created on Wed Nov 30 23:35:15 2019
 @author: guilherme
 """
 
-def downloadData(IDs, yearRange, monthRange, method = 'h', path = './'):
+def downloadData(IDs, yearRange, monthRange, method = 'hourly', path = './'):
     '''
     Description: It downloads weather information from the Environment Canada website. 
     It is possible to download daily or hourly information in a slice of time passed as an argument.
     
     Input: IDs:  list of the target stations IDs.
     
-           yearRange: Years range passed as a list.
+           yearRange: List of the target years.
            
-           monthRange: Months range passed as a list.
+           monthRange: List of the target months.
            
-           method: 'h' for hourly information (deafault) or 'd' for daily information.
+           method: 'hourly' for hourly information (deafault) or 'daily' for daily information.
            
            path: Path on the machine to save the data downloaded.
     '''
@@ -25,9 +25,9 @@ def downloadData(IDs, yearRange, monthRange, method = 'h', path = './'):
     import pandas as pd
     import urllib as url
     
-    if method == 'h':
+    if method == 'hourly':
         method  = "&timeframe=1&submit=Download+Data"
-    elif method == 'd':
+    elif method == 'daily':
         method  = "&timeframe=2&submit=Download+Data"
     else:
         print('method = ' + method + 'is not valid.')
