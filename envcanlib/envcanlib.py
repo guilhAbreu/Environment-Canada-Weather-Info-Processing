@@ -17,9 +17,9 @@ def downloadData(IDs, start, end, method = 'hourly', path = './'):
            
            end: A tuple with end year and end month.
            
-           method: 'hourly' for hourly information (deafault) or 'daily' for daily information.
+           method: 'hourly' for hourly information (default) or 'daily' for daily information.
            
-           path: Path on the machine to save the data downloaded.
+           path: Path in the machine to save the data downloaded.
     '''
     
     import pandas as pd
