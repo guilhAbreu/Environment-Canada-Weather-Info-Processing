@@ -51,11 +51,39 @@ def downloadData(IDs, start, end, method = 'hourly', path = './'):
             else:
                 monthRange = range(1, 13)    
             
-            for intMnt in monthRange:
+            if method == "&timeframe=1&submit=Download+Data":
+                for intMnt in monthRange:
+                    #build the query
+                    strQry = 'http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=' + str(ID) + "&Year=" + str(intYr) +'&Month=' + str(intMnt) + method 
+                    #print strQry
+                    print ('Querying station ' + str(ID) + ' for year ' + str(intYr) + ' and month ' + str(intMnt))
+                    try:
+                        response = url.request.urlopen(strQry)
+                        rawData = response.readlines()
+                        response.close()
+                        rawData = [row.decode('utf8').replace('"','').replace('\n','') for row in rawData]
+                       
+                        columns = rawData[0].split(',')
+                        d = [line.split(',') for line in rawData[1:]]
+                        
+                        for i in range(len(d)):
+                            if len(d[i]) > len(columns):
+                                d[i][len(columns)-1] = "".join(d[i][len(columns)-1:])
+                                d[i] = d[i][:len(columns)]
+                                
+                            if len(d[i]) < len(columns):
+                                while len(d[i]) < len(columns):
+                                    d[i].append('')
+                                
+                        newData = pd.DataFrame(d, columns=columns)
+                        data = data.append(newData, ignore_index=True, sort=False)
+                    except Exception:
+                        print ('Failure getting data for '  + str(ID) + ' for year ' + str(intYr))
+            else:
                 #build the query
-                strQry = 'http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=' + str(ID) + "&Year=" + str(intYr) +'&Month=' + str(intMnt) + method 
+                strQry = 'http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=' + str(ID) + "&Year=" + str(intYr) + method 
                 #print strQry
-                print ('Querying station ' + str(ID) + ' for year ' + str(intYr) + ' and month ' + str(intMnt))
+                print ('Querying station ' + str(ID) + ' for year ' + str(intYr))
                 try:
                     response = url.request.urlopen(strQry)
                     rawData = response.readlines()
@@ -76,7 +104,17 @@ def downloadData(IDs, start, end, method = 'hourly', path = './'):
                             
                     newData = pd.DataFrame(d, columns=columns)
                     data = data.append(newData, ignore_index=True, sort=False)
+                    data['Month'] = data['Month'].astype(int)
+                    data['Year'] = data['Year'].astype(int)
+                    if start[0] != end[0]:
+                        data = data[((data['Month'] >= start[1]) & (data['Year'] == start[0]))
+                                    | ((data['Year'] != start[0]) & (data['Year'] != end[0]))
+                                    | ((data['Month'] <= end[1]) & (data['Year'] == end[0]))]
+                    else:
+                        data = data[(data['Month'] >= start[1]) & (data['Month'] <= end[1])]
+
                 except Exception:
                     print ('Failure getting data for '  + str(ID) + ' for year ' + str(intYr))
         
+        data = data.dropna(axis = 0, how = 'all')
         data.to_csv(path+str(ID)+".csv", index=False, line_terminator="")
