@@ -23,7 +23,7 @@ def downloadData(IDs, start, end, method = 'hourly', path = './'):
     '''
     
     import pandas as pd
-    import urllib as url
+    import urllib.request as url
     
     if start[0] > end[0]:
         raise ValueError('Start year is greater than end year')
@@ -58,7 +58,7 @@ def downloadData(IDs, start, end, method = 'hourly', path = './'):
                     #print strQry
                     print ('Querying station ' + str(ID) + ' for year ' + str(intYr) + ' and month ' + str(intMnt))
                     try:
-                        response = url.request.urlopen(strQry)
+                        response = url.urlopen(strQry)
                         rawData = response.readlines()
                         response.close()
                         rawData = [row.decode('utf8').replace('"','').replace('\n','') for row in rawData]
@@ -77,15 +77,15 @@ def downloadData(IDs, start, end, method = 'hourly', path = './'):
                                 
                         newData = pd.DataFrame(d, columns=columns)
                         data = data.append(newData, ignore_index=True, sort=False)
-                    except Exception:
-                        print ('Failure getting data for '  + str(ID) + ' for year ' + str(intYr))
+                    except Exception as e:
+                        print ('Failure getting data for '  + str(ID) + ' for year ' + str(intYr) + '. ',e)
             else:
                 #build the query
                 strQry = 'http://climate.weather.gc.ca/climate_data/bulk_data_e.html?format=csv&stationID=' + str(ID) + "&Year=" + str(intYr) + method 
                 #print strQry
                 print ('Querying station ' + str(ID) + ' for year ' + str(intYr))
                 try:
-                    response = url.request.urlopen(strQry)
+                    response = url.urlopen(strQry)
                     rawData = response.readlines()
                     response.close()
                     rawData = [row.decode('utf8').replace('"','').replace('\n','') for row in rawData]
