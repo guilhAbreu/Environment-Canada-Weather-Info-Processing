@@ -11,11 +11,11 @@ import envcanlib as ecl
 
 if len(sys.argv) < 7:
     quit('Missing Arguments.The arguments should be like the following\n'+
-         '<STARTYEAR> <STARTMONTH> <ENDYEAR> <ENDMONTH> <PATH> <STATIONSLISTFILE> <METHOD(hourly or daily)>')
+         '<STARTYEAR> <ENDYEAR> <STARTMONTH> <ENDMONTH> <PATH> <STATIONSLISTFILE> <METHOD(hourly or daily)>')
     
 startYear  = int(sys.argv[1])
-startMonth = int(sys.argv[2])
-endYear    = int(sys.argv[3])
+endYear    = int(sys.argv[2])
+startMonth = int(sys.argv[3])
 endMonth   = int(sys.argv[4])
 method     = sys.argv[7]
 dataPath   = sys.argv[5]+method+"/"
