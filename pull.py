@@ -12,7 +12,7 @@ The Time Series passed can be continuous ou not continuous.
 
 The arguments should be like the following:
     
-         <STARTYEAR> <STARTMONTH> <ENDYEAR> <ENDMONTH> <PATH>
+         <STARTYEAR> <ENDYEAR> <STARTMONTH> <ENDMONTH> <PATH>
          <StationsListFile> <METHOD> <FORMAT> <ContinuousTimeSeriesFlag>
          
 where <STARTYEAR> <STARTMONTH> <ENDYEAR> <ENDMONTH> is the period of the interest passed as numbers,
@@ -30,16 +30,18 @@ import envcanlib as ecl
 if __name__ == '__main__':
     if len(sys.argv) < 9:
         quit('Missing Arguments.The arguments should be like the following\n'+
-             '<STARTYEAR> <ENDYEAR> <STARTMONTH> <ENDMONTH> <METHOD>'+
-             '<PATH> <StationsListFile> <FORMAT> <ContinuousTimeSeriesFlag>')
+             '<STARTYEAR> <ENDYEAR> <STARTMONTH> <ENDMONTH> <PATH> '+
+             '<StationsListFile> <METHOD> <FORMAT> <ContinuousTimeSeriesFlag>')
         
     startYear  = int(sys.argv[1])
-    startMonth = int(sys.argv[2])
-    endYear    = int(sys.argv[3])
+    endYear    = int(sys.argv[2])
+    startMonth = int(sys.argv[3])
     endMonth   = int(sys.argv[4])
-    method     = sys.argv[5]
-    dataPath   = sys.argv[6]+method+"/"
-    file       = sys.argv[7]
+    
+    file       = sys.argv[6]
+    method     = sys.argv[7]
+    dataPath   = sys.argv[5]+method+"/"
+    
     dataFormat = sys.argv[8]
     conFlag    = True if sys.argv[9] == 'True' else False
     
