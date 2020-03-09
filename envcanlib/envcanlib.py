@@ -201,7 +201,7 @@ def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'de
                         data = data.append(newData, ignore_index=True, sort=False)
                         data['Month'] = data['Month'].astype(int)
                         data['Year'] = data['Year'].astype(int)
-                        if start[0] != end[0]:
+                        if (start[0] != end[0]) and continuous:
                             data = data[((data['Month'] >= start[1]) & (data['Year'] == start[0]))
                                         | ((data['Year'] != start[0]) & (data['Year'] != end[0]))
                                         | ((data['Month'] <= end[1]) & (data['Year'] == end[0]))]
