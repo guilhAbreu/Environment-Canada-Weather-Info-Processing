@@ -16,12 +16,15 @@ The arguments should be like the following:
          <StationsListFile> <METHOD> <FORMAT> <ContinuousTimeSeriesFlag>
          
 where <STARTYEAR> <STARTMONTH> <ENDYEAR> <ENDMONTH> is the period of the interest passed as numbers,
-<PATH> is the path on the machine in which the files will be stored. <StationsListFile> is the name of
-file containing each Station ID per row to be downloaded. <METHOD> can be 'hourly' or 'daily' which 
-means what type of information will be downloaded. <FORMAT> speciefy the format of the data. The 
-options are 'default', which means one file per station,  and 'oneFile', which means one file for 
-all stations. <ContinuousTimeSeriesFlag> indicates whether the period of time passed is continuous 
-or not.
+<PATH> is the path on the machine in which the files will be stored (for instance, 1991 03 1994 06). 
+<StationsListFile> is the name of file containing each Station ID per row to be downloaded. 
+<METHOD> can be 'hourly' or 'daily' which means what type of information will be downloaded. 
+<FORMAT> speciefy the format of the data. The options are 'default', which means one file per station,
+and 'oneFile', which means one file for all stations. <ContinuousTimeSeriesFlag> indicates whether the
+period of time passed is continuous or not. In case the value passed is True, it will be downloaded 
+information from <STARTYEAR>/<STARTMONTH> to <ENDYEAR>/<ENDMONTH> as a continuous time, otherwise it 
+will be considered the information between <STARTMONTH> and <ENDMONTH> of each year from <STARTYEAR> 
+to <ENDYEAR>.
 """
 
 import os, sys
