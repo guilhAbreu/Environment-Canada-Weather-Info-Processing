@@ -67,7 +67,7 @@ for index1,row1 in six2ntyStations.iterrows():
 data = list()
 for i in range(len(IDs)):
     temp = six2ntyStations.sort_values(by=[str(IDs[i])], ignore_index=True)
-    data.append([str(IDs[i]), str(temp['Station ID'][0]), temp[str(IDs[i])][0]])
+    data.append([str(IDs[i]), str(temp['Station ID'][0]), round(temp[str(IDs[i])][0], 2)])
     
     
 new_table = pd.DataFrame(data = data, columns=['Station ID', 'Closest Station ID', 'Distance (Km)'])
