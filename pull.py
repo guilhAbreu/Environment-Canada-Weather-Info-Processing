@@ -7,57 +7,57 @@ Created on Sun Nov 24 02:02:42 2019
 @email: debritoabreu@gmail.com
 
 Description: It downloads weather information from the Environment Canada website. 
-It is possible to download daily or hourly information in a slice of time passed as an argument.
-The Time Series passed can be continuous ou not continuous.
-
-The arguments should be like the following:
-    
-         <STARTYEAR> <ENDYEAR> <STARTMONTH> <ENDMONTH> <PATH>
-         <StationsListFile> <METHOD> <FORMAT> <ContinuousTimeSeriesFlag>
          
-where <STARTYEAR> <STARTMONTH> <ENDYEAR> <ENDMONTH> is the period of the interest passed as numbers,
-<PATH> is the path on the machine in which the files will be stored (for instance, 1991 03 1994 06). 
-<StationsListFile> is the name of file containing each Station ID per row to be downloaded. 
-<METHOD> can be 'hourly' or 'daily' which means what type of information will be downloaded. 
+<STARTYEAR> <STARTMONTH> <ENDYEAR> <ENDMONTH> is the period of the interest passed as numbers. 
 <FORMAT> specify the format of the data. The options are 'default', which means one file per station,
-and 'oneFile', which means one file for all stations. <ContinuousTimeSeriesFlag> indicates whether the
-period of time passed is continuous or not. In case the value passed is True, it will be downloaded 
-information from <STARTYEAR>/<STARTMONTH> to <ENDYEAR>/<ENDMONTH> as a continuous-time, otherwise, it 
-will be considered the information between <STARTMONTH> and <ENDMONTH> of each year from <STARTYEAR> 
-to <ENDYEAR>.
+and 'oneFile', which means one file for all stations.
+
+Change CONTFLAG to False if it is intended to download just a slice of month of each year passed.
+
+Contact me in case of any bug being reported.
 """
 
-import os, sys
+METADATAFILE = 'stations_inventory.csv'
+
+import os
 import envcanlib as ecl
+import pandas as pd
+from datetime import date
+
+FIRSTYEAR  = 1840
+LASTYEAR   = date.today().year
+FIRSTMONTH = 1
+LASTMONTH  = date.today().month
+CONTFLAG   = True
+
 
 if __name__ == '__main__':
-    if len(sys.argv) < 9:
-        quit('Missing Arguments.The arguments should be like the following\n'+
-             '<STARTYEAR> <ENDYEAR> <STARTMONTH> <ENDMONTH> <PATH> '+
-             '<StationsListFile> <METHOD> <FORMAT> <ContinuousTimeSeriesFlag>')
-        
-    startYear  = int(sys.argv[1])
-    endYear    = int(sys.argv[2])
-    startMonth = int(sys.argv[3])
-    endMonth   = int(sys.argv[4])
     
-    file       = sys.argv[6]
-    method     = sys.argv[7]
-    dataPath   = sys.argv[5]+method+"/"
+    # download stations inventory
+    os.system("wget --no-check-certificate 'https://docs.google.com/uc?export=download&id=1egfzGgzUb0RFu_EE5AYFZtsyXPfZ11y2' -O " + METADATAFILE)
     
-    dataFormat = sys.argv[8]
-    conFlag    = True if sys.argv[9] == 'True' else False
+    inventF = open(METADATAFILE, 'r')
+    rows = inventF.readlines()
+    inventF.close()
+    rows = rows[3:] #erase comments
+    rows = [r.replace('\n','').replace('"','').split(',') for r in rows] #remove ",\n and make a list as matrix
     
-    stationsListF = open(file, 'r')
-    IDs = stationsListF.readlines()
-    stationsListF.close()
+    # adapt data considering that there are station names that contain commas
+    for r in rows:
+        if len(r) > len(rows[0]):
+            r.pop(1)
     
-    IDs = [ID.replace('\n','') for ID in IDs]
+    # create a dataframe
+    md = pd.DataFrame(rows[1:], columns=rows[0])
     
-    try:
-        os.makedirs(dataPath)
-    except FileExistsError:
-        pass
+    startYear  = FIRSTYEAR
+    endYear    = LASTYEAR
+    startMonth = FIRSTMONTH
+    endMonth   = LASTMONTH
+    conFlag    = CONTFLAG
     
-    ecl.downloadData(IDs = IDs, start = (startYear, startMonth), end = (endYear, endMonth), method = method, 
-                     path=dataPath, dataFormat = dataFormat, continuous = conFlag)
+    IDs = md['Station ID'].unique()
+    
+    for method in ['daily','hourly']:
+        ecl.downloadData(IDs = IDs, start = (startYear, startMonth), end = (endYear, endMonth), 
+                         method = method,dataFormat = 'oneFile', continuous = conFlag, metaData=md)

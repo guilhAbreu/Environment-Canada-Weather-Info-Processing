@@ -6,7 +6,7 @@ Created on Wed Nov 30 23:35:15 2019
 @author: guilherme
 """
 
-def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'default', continuous = True):
+def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'default', continuous = True, metaData = None):
     '''
     Description: It downloads weather information from the Environment Canada website. 
     It is possible to download daily or hourly information in a slice of time passed as an argument.
@@ -32,10 +32,13 @@ def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'de
     if start[0] == end[0] and start[1] > end[1]:
         raise ValueError('Start month is greater than end month')
     
+    
     if method == 'hourly':
         method  = "&timeframe=1&submit=Download+Data"
+        downloadMethod = 'HLY'
     elif method == 'daily':
         method  = "&timeframe=2&submit=Download+Data"
+        downloadMethod = 'DLY'
     else:
         print('method = ' + method + 'is not valid.')
         print('avalible methods are "h" or "d".')
@@ -165,9 +168,13 @@ def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'de
                                 if len(d[i]) < len(columns):
                                     while len(d[i]) < len(columns):
                                         d[i].append('')
-                                    
+                            
                             newData = pd.DataFrame(d, columns=columns)
                             newData.insert(0, column='Station ID', value = [ID for i in range(newData.shape[0])])
+                            
+                            if type(metaData) == pd.DataFrame:
+                                province = metaData.loc[metaData['Station ID'] == str(ID)]['Province'].values[0]
+                                newData.insert(1, column='Province', value = [province for i in range(newData.shape[0])])
                             
                             data = data.append(newData, ignore_index=True, sort=False)
                         except Exception as e:
@@ -198,6 +205,10 @@ def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'de
                         newData = pd.DataFrame(d, columns=columns)
                         newData.insert(0, column='Station ID', value = [ID for i in range(newData.shape[0])])
                         
+                        if type(metaData) == pd.DataFrame:
+                            province = metaData.loc[metaData['Station ID'] == str(ID)]['Province'].values[0]
+                            newData.insert(1, column='Province', value = [province for i in range(newData.shape[0])])
+                        
                         data = data.append(newData, ignore_index=True, sort=False)
                         data['Month'] = data['Month'].astype(int)
                         data['Year'] = data['Year'].astype(int)
@@ -212,4 +223,4 @@ def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'de
                         print ('Failure getting data for '  + str(ID) + ' for year ' + str(intYr))
             
         data = data.dropna(axis = 0, how = 'all')
-        data.to_csv(path+'allStations.csv', index=False, line_terminator="")        
+        data.to_csv(path+downloadMethod+'Information.csv', index=False, line_terminator="")        
