@@ -27,6 +27,7 @@ def distanceCalculator(lat1, lon1, lat2, lon2):
 
 import pandas as pd
 import numpy as np
+import envcanlib
 
 #get IDs of the stations of interest
 f = open('WEATHER_STATIONS.txt', 'r')
@@ -37,7 +38,7 @@ stations = [s.replace('\n','') for s in stations]
 #open and filter what stations have information on the period of interest
 md = pd.read_csv("stations_inventory.csv")
 quebecStations = md[md['Province'] == 'QUEBEC']
-six2ntyStations = quebecStations[(quebecStations['DLY First Year'] > 1960) & (quebecStations['DLY Last Year'] < 1991)]
+six2ntyStations = quebecStations[(quebecStations['DLY First Year'] <= 1981) & (quebecStations['DLY Last Year'] >= 2010)]
 
 f = open('WEATHER_STATIONS_IDs.txt', 'r')
 IDs = f.readlines()
@@ -72,3 +73,5 @@ for i in range(len(IDs)):
     
 new_table = pd.DataFrame(data = data, columns=['Station ID', 'Closest Station ID', 'Distance (Km)'])
 new_table.to_csv('closest_stations.csv')
+
+envcanlib.downloadData(IDs = new_table['Closest Station ID'].values, start=(1981,1), end=(2010,12), method='daily', path='~/Documents/1981-2010/')
