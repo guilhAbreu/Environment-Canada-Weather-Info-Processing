@@ -70,8 +70,8 @@ for i in range(len(IDs)):
     temp = six2ntyStations.sort_values(by=[str(IDs[i])], ignore_index=True)
     data.append([str(IDs[i]), str(temp['Station ID'][0]), round(temp[str(IDs[i])][0], 2)])
     
-    
 new_table = pd.DataFrame(data = data, columns=['Station ID', 'Closest Station ID', 'Distance (Km)'])
-new_table.to_csv('closest_stations.csv')
+new_table.to_csv('closest_stations_81-2010.csv')
 
-envcanlib.downloadData(IDs = new_table['Closest Station ID'].values, start=(1981,1), end=(2010,12), method='daily', path='~/Documents/1981-2010/')
+envcanlib.downloadData(IDs = new_table['Closest Station ID'].unique(), start=(1981,1), end=(2010,12), method='daily',
+                       path='/home/guilherme/Documents/GIT - REPOSITORIES/dataset/EnvironmentCanada/Quebec/climateNormals/1981-2010/')
