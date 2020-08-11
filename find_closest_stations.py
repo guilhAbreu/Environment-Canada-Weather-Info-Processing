@@ -61,11 +61,11 @@ for index1,row1 in possStations.iterrows():
 data = list()
 for i in range(len(IDs)):
     temp = possStations.sort_values(by=[str(IDs[i])], ignore_index=True)
-    data.append([str(IDs[i]), str(temp['Station ID'][0]), round(temp[str(IDs[i])][0], 2)])
+    data.append([str(IDs[i]), str(temp['Station ID'][1]), round(temp[str(IDs[i])][0], 2)])
     
 new_table = pd.DataFrame(data = data, columns=['Station ID', 'Closest Station ID', 'Distance (Km)'])
 new_table.to_csv('closest_stations_2010-2012.csv')
 
-envcanlib.downloadData(IDs = ['30165'], start=(2010,6), end=(2012,8), method='daily', continuous = False)
+envcanlib.downloadData(IDs = [new_table.iloc[:,1].unique()[0]], start=(2010,6), end=(2012,8), continuous = False)
 
-envcanlib.downloadData(IDs = ['5574'], start=(2010,6), end=(2014,8), method='daily', continuous = False)
+envcanlib.downloadData(IDs = [new_table.iloc[:,1].unique()[1]], start=(2010,6), end=(2014,8), continuous = False)
