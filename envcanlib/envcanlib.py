@@ -121,6 +121,9 @@ def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'de
                                         | ((data['Month'] <= end[1]) & (data['Year'] == end[0]))]
                         else:
                             data = data[(data['Month'] >= start[1]) & (data['Month'] <= end[1])]
+                            
+                        if not continuous:
+                            data = data[(data['Month'] <= end[1]) & (data['Month'] >= start[1])]
     
                     except Exception:
                         print ('Failure getting data for '  + str(ID) + ' for year ' + str(intYr))
