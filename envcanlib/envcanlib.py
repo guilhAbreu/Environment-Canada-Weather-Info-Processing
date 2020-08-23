@@ -6,7 +6,8 @@ Created on Wed Nov 30 23:35:15 2019
 @author: guilherme
 """
 
-def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'default', continuous = True, metaData = None):
+def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'default', 
+                 continuous = True, metaData = None,  fileName = None):
     '''
     Description: It downloads weather information from the Environment Canada website. 
     It is possible to download daily or hourly information in a slice of time passed as an argument.
@@ -22,6 +23,11 @@ def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'de
            path: Path in the machine to save the data downloaded. Default is the path where the code is running.
            
            dataFormat: 'default' (each station has its own file) or 'oneFile' (just one file for all stations).
+           
+           continuous: If True the time passed will be considered as continuous, otherwise only months betwwen 
+           start month and end month will be downloaded. Default value is True.
+           
+           fileName: Dictionary to name each file.
     '''
     
     import pandas as pd
@@ -129,7 +135,11 @@ def downloadData(IDs, start, end, method = 'hourly', path = '', dataFormat = 'de
                         print ('Failure getting data for '  + str(ID) + ' for year ' + str(intYr))
             
             data = data.dropna(axis = 0, how = 'all')
-            data.to_csv(path+str(ID)+".csv", index=False, line_terminator="")
+            
+            if type(fileName) == dict:
+                data.to_csv(path+fileName[str(ID)]+".csv", index=False, line_terminator="")
+            else:
+                data.to_csv(path+str(ID)+".csv", index=False, line_terminator="")
             
     else:
         data = pd.DataFrame([])
